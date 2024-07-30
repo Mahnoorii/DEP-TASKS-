@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Notification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+        }
+        #notifications {
+            margin: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: left;
+        }
+        p {
+            margin: 10px 0;
+            padding: 10px;
+            border-left: 5px solid #4CAF50;
+            background-color: #e8f5e9;
+            color: #2c6b2f;
+        }
+        form {
+            margin-top: 20px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>WebSocket Notification Example</h1>
+    <div id="notifications"></div>
+    <form id="messageForm">
+        <input type="text" id="messageInput" placeholder="Type a message" required>
+        <button type="submit">Send</button>
+    </form>
+    <script>
+        const socket = new WebSocket('ws://localhost:8080');
+
+        socket.addEventListener('open', () => {
+            console.log('Connected to the WebSocket server');
+        });
+
+        socket.addEventListener('message', (event) => {
+            const notificationDiv = document.getElementById('notifications');
+            const message = document.createElement('p');
+            message.textContent = event.data;
+            notificationDiv.appendChild(message);
+        });
+
+        socket.addEventListener('close', () => {
+            console.log('Disconnected from the WebSocket server');
+        });
+
+        socket.addEventListener('error', (error) => {
+            console.error('WebSocket error:', error);
+        });
+
+        // Handle the form submission
+        document.getElementById('messageForm').addEventListener('submit', (event) => {
+            event.preventDefault(); // Prevent the form from submitting the traditional way
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value;
+            socket.send(message); // Send the message to the WebSocket server
+            messageInput.value = ''; // Clear the input field
+        });
+    </script>
+</body>
+</html>
